@@ -20,11 +20,10 @@ DynamoDB Streams
               ├── SQS → EKS PDFGenerator Container → S3 (real PDF)
               └── SNS → Email notification to owner
 
-CI/CD
-  └── Jenkins (on EKS)
-        ├── pytest → sam build → sam deploy (CloudFormation)
-        ├── docker build → ECR push
-        └── Update k8s-manifests repo → ArgoCD syncs to EKS
+Docker microservice
+  └── Docker (on ECS)
+        ├── ECR → Repository → build, tag and push
+        └── ECS → Task and cluster service
 ```
 
 ---
@@ -35,9 +34,8 @@ CI/CD
 |---|---|
 | 1. CRUD Microservice | API Gateway, Lambda, DynamoDB, Cognito |
 | 2. Event-Driven | DynamoDB Streams, EventBridge, SQS, SNS, Lambda |
-| 3. CI/CD Deployment | Jenkins, CloudFormation/SAM, Amazon EKS |
-| 4. GitOps | GitHub, ArgoCD, ECR |
-| 5. Static Hosting | S3, CloudFront, ACM, Route 53 |
+| 3. Containerization | ECR, ECS |
+| 4. Static Hosting | S3, CloudFront |
 
 ---
 
@@ -45,9 +43,6 @@ CI/CD
 
 ```
 aws-resume-platform/
-├── template.yaml                  # SAM / CloudFormation (all infrastructure)
-├── samconfig.toml                 # SAM deploy defaults
-├── Jenkinsfile                    # CI/CD pipeline definition
 ├── lambdas/
 │   ├── create_resume/app.py       # POST /resume
 │   ├── get_resume/app.py          # GET  /resume/{resumeId} (public)
@@ -55,21 +50,24 @@ aws-resume-platform/
 │   ├── delete_resume/app.py       # DELETE /resume/{resumeId}
 │   ├── list_resumes/app.py        # GET  /resumes
 │   ├── fanout_handler/app.py      # DynamoDB Stream → EventBridge
-│   └── pdf_generator/
-│       ├── app.py                 # Lambda version (JSON snapshot)
-│       └── requirements.txt
+│   └── pdf_generator/app.py       # Lambda version (JSON snapshot)
 ├── pdf-generator-container/
-│   ├── app.py                     # EKS container version (real PDF)
+│   ├── app.py                     # ECS container version
 │   ├── Dockerfile
 │   └── requirements.txt
-├── frontend2/
+├── frontend/                      # v1
 │   ├── index.html                 # Login / Register
 │   ├── dashboard.html             # Owner resume list
 │   ├── editor.html                # Resume editor
 │   ├── view.html                  # Public resume viewer (no auth)
 │   └── config.js                  # AWS config values (fill before deploy)
-└── tests/
-    └── test_lambdas.py            # Unit tests (pytest)
+└── frontend2/                     # v2
+    ├── index.html                 # Login / Register
+    ├── dashboard.html             # Owner resume list
+    ├── editor.html                # Resume editor
+    ├── view.html                  # Public resume viewer (no auth)
+    ├── style.css                  # style
+    └── config.js                  # AWS config values (fill before deploy)
 ```
 
 ---
