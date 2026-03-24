@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume</title>
+  <script src="config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav>
+    <span class="brand">Resume Platform</span>
+    <a class="nav-btn" href="dashboard.html">← Back to Dashboard</a>
+  </nav>
+
+  <div class="container container--medium">
+    <div id="resume"></div>
+  </div>
+
+  <script>
+    const resumeId = new URLSearchParams(window.location.search).get('resumeId');
+
+    async function load() {
+      const res = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`);
+      if (!res.ok) {
+        document.getElementById('resume').innerHTML =
+          '<div class="not-found">Resume not found.</div>';
+        return;
+      }
+
+      const item = await res.json();
+      const d    = item.data || {};
+
+      const skillTags = (d.skills || [])
+        .filter(s => s)
+        .map(s => `<span class="skill-tag">${s}</span>`)
+        .join('');
+
+      const emailHtml = d.email
+        ? `<div class="contact">📧 <a href="mailto:${d.email}">${d.email}</a></div>`
+        : '';
+
+      const summarySection = d.summary
+        ? `<div class="section">
+             <div class="section-label">About</div>
+             <p class="summary-text">${d.summary}</p>
+           </div>`
+        : '';
+
+      const skillsSection = skillTags
+        ? `<div class="section">
+             <div class="section-label">Skills</div>
+             <div class="skills-list">${skillTags}</div>
+           </div>`
+        : '';
+
+      document.getElementById('resume').innerHTML = `
+        <div class="resume-header">
+          <h1>${d.name || 'Unnamed'}</h1>
+          ${d.title ? `<div class="job-title">${d.title}</div>` : ''}
+          ${emailHtml}
+        </div>
+        <div class="resume-body">
+          ${summarySection}
+          ${skillsSection}
+        </div>
+      `;
+
+      if (d.name) document.title = `${d.name} — Resume`;
+    }
+
+    load();
+  </script>
+</body>
+</html>

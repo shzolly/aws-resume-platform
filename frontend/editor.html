@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Resume</title>
+  <script src="config.js"></script>
+</head>
+<body>
+  <h2>Edit Resume</h2>
+  <input id="name"    placeholder="Full Name" /><br/>
+  <input id="title"   placeholder="Job Title" /><br/>
+  <textarea id="summary" placeholder="Summary"></textarea><br/>
+  <input id="email"   placeholder="Email" /><br/>
+  <input id="skills"  placeholder="Skills (comma separated)" /><br/>
+  <button onclick="save()">Save</button>
+  <button onclick="window.location.href='dashboard.html'">Back</button>
+  <p id="msg"></p>
+
+  <script>
+    const token     = localStorage.getItem('idToken');
+    const resumeId  = new URLSearchParams(window.location.search).get('resumeId');
+    if (!token) window.location.href = 'index.html';
+
+    async function load() {
+      const res  = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`);
+      const item = await res.json();
+      const d    = item.data || {};
+      document.getElementById('name').value    = d.name    || '';
+      document.getElementById('title').value   = d.title   || '';
+      document.getElementById('summary').value = d.summary || '';
+      document.getElementById('email').value   = d.email   || '';
+      document.getElementById('skills').value  = (d.skills || []).join(', ');
+    }
+
+    async function save() {
+      const data = {
+        name:    document.getElementById('name').value,
+        title:   document.getElementById('title').value,
+        summary: document.getElementById('summary').value,
+        email:   document.getElementById('email').value,
+        skills:  document.getElementById('skills').value.split(',').map(s => s.trim())
+      };
+      const res = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`, {
+        method:  'PUT',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ data })
+      });
+      const result = await res.json();
+      document.getElementById('msg').innerText =
+        result.updated ? '✅ Saved!' : JSON.stringify(result);
+    }
+
+    load();
+  </script>
+</body>
+</html>

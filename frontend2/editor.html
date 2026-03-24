@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Resume</title>
+  <script src="config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav>
+    <span class="brand">Resume Platform</span>
+    <button class="nav-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+  </nav>
+
+  <div class="container container--narrow">
+    <div class="page-header">
+      <div>
+        <h2>Edit Resume</h2>
+        <p>Fill in your details below and click Save when done.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Personal Information</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input id="name" type="text" placeholder="Jane Doe" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input id="email" type="email" placeholder="jane@example.com" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Job Title</label>
+        <input id="title" type="text" placeholder="e.g. Senior Software Engineer" />
+      </div>
+
+      <hr class="divider" />
+      <div class="section-title">About</div>
+
+      <div class="form-group">
+        <label for="summary">Professional Summary</label>
+        <textarea id="summary" placeholder="A brief overview of your experience and goals..."></textarea>
+      </div>
+
+      <hr class="divider" />
+      <div class="section-title">Skills</div>
+
+      <div class="form-group">
+        <label for="skills">Skills</label>
+        <input id="skills" type="text" placeholder="e.g. JavaScript, Python, AWS, Docker" />
+        <div class="hint">Separate skills with commas.</div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="save()">Save Resume</button>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token    = localStorage.getItem('idToken');
+    const resumeId = new URLSearchParams(window.location.search).get('resumeId');
+    if (!token) window.location.href = 'index.html';
+
+    async function load() {
+      const res  = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`);
+      const item = await res.json();
+      const d    = item.data || {};
+      document.getElementById('name').value    = d.name    || '';
+      document.getElementById('title').value   = d.title   || '';
+      document.getElementById('summary').value = d.summary || '';
+      document.getElementById('email').value   = d.email   || '';
+      document.getElementById('skills').value  = (d.skills || []).join(', ');
+    }
+
+    async function save() {
+      const data = {
+        name:    document.getElementById('name').value,
+        title:   document.getElementById('title').value,
+        summary: document.getElementById('summary').value,
+        email:   document.getElementById('email').value,
+        skills:  document.getElementById('skills').value.split(',').map(s => s.trim())
+      };
+      const res = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`, {
+        method:  'PUT',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ data })
+      });
+      const result = await res.json();
+      document.getElementById('msg').innerText =
+        result.updated ? '✅ Saved!' : JSON.stringify(result);
+    }
+
+    load();
+  </script>
+</body>
+</html>

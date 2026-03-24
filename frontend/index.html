@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resume Platform - Login</title>
+  <script src="config.js"></script>
+</head>
+<body>
+  <h2>Resume Platform</h2>
+  <input id="email"    type="email"    placeholder="Email" /><br/>
+  <input id="password" type="password" placeholder="Password" /><br/>
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Register</button>
+  <p id="msg"></p>
+
+  <script>
+    const COGNITO_URL = `https://cognito-idp.${CONFIG.region}.amazonaws.com/`;
+
+    // ─── LOGIN ───────────────────────────────────────────────
+    async function login() {
+      const email    = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch(COGNITO_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/x-amz-json-1.1',
+          'X-Amz-Target':  'AWSCognitoIdentityProviderService.InitiateAuth'
+        },
+        body: JSON.stringify({
+          AuthFlow:   'USER_PASSWORD_AUTH',
+          ClientId:    CONFIG.userPoolClientId,
+          AuthParameters: {
+            USERNAME: email,
+            PASSWORD: password
+          }
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.AuthenticationResult) {
+        localStorage.setItem('idToken', data.AuthenticationResult.IdToken);
+        window.location.href = 'dashboard.html';
+      } else {
+        document.getElementById('msg').innerText =
+          '❌ Login failed: ' + (data.message || JSON.stringify(data));
+      }
+    }
+
+    // ─── REGISTER ────────────────────────────────────────────
+    async function register() {
+      const email    = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        document.getElementById('msg').innerText = '⚠️ Please enter email and password.';
+        return;
+      }
+
+      // Step 1 — Sign up
+      const res = await fetch(COGNITO_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-amz-json-1.1',
+          'X-Amz-Target': 'AWSCognitoIdentityProviderService.SignUp'
+        },
+        body: JSON.stringify({
+          ClientId: CONFIG.userPoolClientId,
+          Username: email,
+          Password: password,
+          UserAttributes: [
+            { Name: 'email', Value: email }
+          ]
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.UserSub) {
+        // Step 2 — Ask for confirmation code
+        const code = prompt(
+          '✅ Account created! Check your email for a verification code.\n\nEnter code:'
+        );
+
+        if (code) {
+          await confirmUser(email, code);
+        } else {
+          document.getElementById('msg').innerText =
+            '⚠️ Registration complete. Please verify your email before logging in.';
+        }
+      } else {
+        document.getElementById('msg').innerText =
+          '❌ Register failed: ' + (data.message || JSON.stringify(data));
+      }
+    }
+
+    // ─── CONFIRM SIGN UP ─────────────────────────────────────
+    async function confirmUser(email, code) {
+      const res = await fetch(COGNITO_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-amz-json-1.1',
+          'X-Amz-Target': 'AWSCognitoIdentityProviderService.ConfirmSignUp'
+        },
+        body: JSON.stringify({
+          ClientId:         CONFIG.userPoolClientId,
+          Username:         email,
+          ConfirmationCode: code
+        })
+      });
+
+      if (res.ok) {
+        document.getElementById('msg').innerText =
+          '✅ Email verified! You can now log in.';
+      } else {
+        const err = await res.json();
+        document.getElementById('msg').innerText =
+          '❌ Verification failed: ' + (err.message || JSON.stringify(err));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resume</title>
+  <script src="config.js"></script>
+</head>
+<body>
+  <div id="resume"></div>
+
+  <script>
+    const resumeId = new URLSearchParams(window.location.search).get('resumeId');
+
+    async function load() {
+      const res  = await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`);
+      if (!res.ok) {
+        document.getElementById('resume').innerHTML = '<p>Resume not found.</p>';
+        return;
+      }
+      const item = await res.json();
+      const d    = item.data || {};
+      document.getElementById('resume').innerHTML = `
+        <h1>${d.name || ''}</h1>
+        <h3>${d.title || ''}</h3>
+        <p>${d.summary || ''}</p>
+        <p>📧 ${d.email || ''}</p>
+        <h4>Skills</h4>
+        <p>${(d.skills || []).join(', ')}</p>
+      `;
+    }
+
+    load();
+  </script>
+</body>
+</html>

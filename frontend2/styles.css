@@ -1,0 +1,463 @@
+/* ─────────────────────────────────────────────────────────────
+   styles.css  —  Resume Platform shared stylesheet
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ── */
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f3f4f6;
+  min-height: 100vh;
+  color: #111827;
+}
+
+/* Login page: full-screen centered gradient */
+body.page-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+}
+
+/* ── Navbar ── */
+nav {
+  background: #1e3a5f;
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+nav .brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+nav .nav-btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 7px;
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+nav .nav-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ── Layout containers ── */
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.container--narrow {
+  max-width: 680px;
+  padding-bottom: 60px;
+}
+
+.container--medium {
+  max-width: 760px;
+  padding-bottom: 60px;
+}
+
+/* ── Page header (dashboard / editor) ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+.page-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* ── White card surface ── */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 32px 28px;
+}
+
+/* ── Form elements ── */
+.form-group { margin-bottom: 18px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, textarea:focus {
+  border-color: #2d6a9f;
+  box-shadow: 0 0 0 3px rgba(45,106,159,0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.6;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #f3f4f6;
+  margin: 24px 0;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* ── Buttons ── */
+.btn {
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 12px 28px;
+}
+
+.btn-primary:hover { background: #16304f; }
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 12px 28px;
+}
+
+.btn-secondary:hover { background: #e5e7eb; }
+
+/* ── Status / feedback message ── */
+#msg {
+  font-size: 14px;
+  color: #374151;
+  min-height: 20px;
+  line-height: 1.5;
+}
+
+/* ════════════════════════════════════════════════════════════
+   LOGIN PAGE  (index.html)
+════════════════════════════════════════════════════════════ */
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card input { font-size: 15px; }
+
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e3a5f;
+  letter-spacing: -0.5px;
+}
+
+.logo p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-group .btn { flex: 1; padding: 12px; }
+
+.login-card #msg {
+  margin-top: 18px;
+  text-align: center;
+}
+
+/* ════════════════════════════════════════════════════════════
+   DASHBOARD PAGE  (dashboard.html)
+════════════════════════════════════════════════════════════ */
+.btn-new {
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-new:hover  { background: #16304f; }
+.btn-new:active { transform: scale(0.97); }
+
+#list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+#list li {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  padding: 22px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+#list li:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.resume-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e3a5f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resume-date {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.card-actions a {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-edit { background: #e8f0fb; color: #1e3a5f; }
+.btn-edit:hover { background: #d1e2f5; }
+
+.btn-view { background: #f0fdf4; color: #166534; }
+.btn-view:hover { background: #dcfce7; }
+
+.btn-delete {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 7px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover { background: #fee2e2; }
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.empty p { font-size: 15px; margin-top: 8px; }
+
+/* ════════════════════════════════════════════════════════════
+   EDITOR PAGE  (editor.html)
+════════════════════════════════════════════════════════════ */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   VIEW PAGE  (view.html)
+════════════════════════════════════════════════════════════ */
+#resume {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+  overflow: hidden;
+}
+
+.resume-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+  padding: 40px 40px 32px;
+  color: #fff;
+}
+
+.resume-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.resume-header .job-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  margin-top: 6px;
+}
+
+.resume-header .contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+}
+
+.resume-header .contact a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+}
+
+.resume-header .contact a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.resume-body { padding: 36px 40px; }
+
+.section { margin-bottom: 32px; }
+.section:last-child { margin-bottom: 0; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #f3f4f6;
+}
+
+.summary-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #374151;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  background: #e8f0fb;
+  color: #1e3a5f;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.not-found {
+  padding: 60px 40px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 15px;
+}

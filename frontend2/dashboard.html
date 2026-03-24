@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Resumes</title>
+  <script src="config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav>
+    <span class="brand">Resume Platform</span>
+    <button class="nav-btn" onclick="logout()">Log out</button>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h2>My Resumes</h2>
+      <button class="btn-new" onclick="createResume()">+ New Resume</button>
+    </div>
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('idToken');
+    if (!token) window.location.href = 'index.html';
+
+    async function loadResumes() {
+      const res   = await fetch(`${CONFIG.apiEndpoint}/resumes`, {
+        headers: { Authorization: token }
+      });
+      const items = await res.json();
+      const ul    = document.getElementById('list');
+
+      if (!items.length) {
+        ul.innerHTML = `<li class="empty">
+          <strong>No resumes yet</strong>
+          <p>Click "+ New Resume" to create your first one.</p>
+        </li>`;
+        return;
+      }
+
+      ul.innerHTML = items.map(r => `
+        <li>
+          <div class="resume-name">${r.name || 'Untitled'}</div>
+          <div class="resume-date">Updated: ${r.updatedAt}</div>
+          <div class="card-actions">
+            <a class="btn-edit" href="editor.html?resumeId=${r.resumeId}">Edit</a>
+            <a class="btn-view" href="view.html?resumeId=${r.resumeId}">View</a>
+            <button class="btn-delete" onclick="deleteResume('${r.resumeId}')">Delete</button>
+          </div>
+        </li>`
+      ).join('');
+    }
+
+    async function createResume() {
+      const res  = await fetch(`${CONFIG.apiEndpoint}/resume`, {
+        method:  'POST',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ data: { name: 'New Resume', title: '', skills: [] } })
+      });
+      const data = await res.json();
+      window.location.href = `editor.html?resumeId=${data.resumeId}`;
+    }
+
+    async function deleteResume(resumeId) {
+      await fetch(`${CONFIG.apiEndpoint}/resume/${resumeId}`, {
+        method:  'DELETE',
+        headers: { Authorization: token }
+      });
+      loadResumes();
+    }
+
+    function logout() {
+      localStorage.removeItem('idToken');
+      window.location.href = 'index.html';
+    }
+
+    loadResumes();
+  </script>
+</body>
+</html>
