@@ -122,4 +122,4 @@ aws-resume-platform/
 ## Author
 
 Built as a hands-on demo project.  
-Covers: Serverless Microservices · Event-Driven Architecture · IaC · GitOps · CDN Hosting · Auto Scaling
+Covers: Serverless Microservices · Event-Driven Architecture · IaC · CI/CD · CDN Hosting · Auto Scaling
