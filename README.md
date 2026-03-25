@@ -16,7 +16,7 @@ The **AWS Resume Management Platform** is a full-stack, cloud-native web applica
 | **Delete Resume** | The owner can permanently delete a resume. An ownership check is enforced at the Lambda level using the Cognito `sub` claim. |
 | **List Resumes** | The owner can view all resumes they have created, returned as a lightweight list with name and last-updated timestamp. |
 | **Public Resume View** | Anyone with a resume URL can view it — no login required. The public viewer calls a dedicated **unauthenticated API route** that looks up the resume by `resumeId` via a DynamoDB **Global Secondary Index (GSI)**. |
-| **Automatic PDF Generation** | Every time a resume is created or updated, **DynamoDB Streams** captures the change and triggers a **FanOutHandler Lambda**, which publishes a `ResumeUpdated` event to **EventBridge**. This fans out to an **SQS queue**, which triggers a **PDFGenerator** — available as both a Lambda function and an **EKS container** — that generates a real PDF using `reportlab` and stores it in **S3**. |
+| **Automatic PDF Generation** | Every time a resume is created or updated, **DynamoDB Streams** captures the change and triggers a **FanOutHandler Lambda**, which publishes a `ResumeUpdated` event to **EventBridge**. This fans out to an **SQS queue**, which triggers a **PDFGenerator** — available as both a Lambda function and an **ECS container** — that generates a real PDF using `reportlab` and stores it in **S3**. |
 | **Email Notification** | When a resume is updated, **EventBridge** simultaneously routes the event to an **SNS topic**, which sends an email notification to the owner confirming their resume was saved successfully. |
 | **Static Web Interface** | A minimal HTML/JavaScript single-page application is hosted on a private **S3 bucket** and served globally over HTTPS via **Amazon CloudFront** with **Origin Access Control (OAC)** — the S3 bucket is never directly accessible. |
 
@@ -35,7 +35,7 @@ DynamoDB Streams
   └── FanOutHandler Lambda
         └── EventBridge (custom bus: resume-events)
               ├── SQS → PDFGenerator Lambda → S3 (JSON snapshot)
-              ├── SQS → EKS PDFGenerator Container → S3 (real PDF)
+              ├── SQS → ECS PDFGenerator Container → S3 (real PDF)
               └── SNS → Email notification to owner
 
 Docker microservice
