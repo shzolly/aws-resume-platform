@@ -2,6 +2,24 @@
 
 A cloud-native Resume Management Platform built as a hands-on project.
 
+## What This Platform Does
+
+The **AWS Resume Management Platform** is a full-stack, cloud-native web application that allows professionals to create, manage, and share their resumes online. It is intentionally kept simple in application logic so the focus remains on demonstrating AWS architectural patterns rather than complex business features.
+
+### Core Functions
+
+| Function | Description |
+|---|---|
+| **Register / Login** | Users sign up and authenticate using **Amazon Cognito**. Each user receives a JWT token containing a unique `sub` claim that becomes their identity across all AWS services. |
+| **Create Resume** | An authenticated owner submits resume data (name, title, skills, experience, education) via a REST API. **API Gateway** validates the JWT, routes the request to a **Lambda** function, which stores the data as a single JSON item in **DynamoDB**. |
+| **Edit Resume** | The owner can update any field of their resume at any time. A **conditional write** in DynamoDB ensures only the rightful owner can modify their own record. |
+| **Delete Resume** | The owner can permanently delete a resume. An ownership check is enforced at the Lambda level using the Cognito `sub` claim. |
+| **List Resumes** | The owner can view all resumes they have created, returned as a lightweight list with name and last-updated timestamp. |
+| **Public Resume View** | Anyone with a resume URL can view it — no login required. The public viewer calls a dedicated **unauthenticated API route** that looks up the resume by `resumeId` via a DynamoDB **Global Secondary Index (GSI)**. |
+| **Automatic PDF Generation** | Every time a resume is created or updated, **DynamoDB Streams** captures the change and triggers a **FanOutHandler Lambda**, which publishes a `ResumeUpdated` event to **EventBridge**. This fans out to an **SQS queue**, which triggers a **PDFGenerator** — available as both a Lambda function and an **EKS container** — that generates a real PDF using `reportlab` and stores it in **S3**. |
+| **Email Notification** | When a resume is updated, **EventBridge** simultaneously routes the event to an **SNS topic**, which sends an email notification to the owner confirming their resume was saved successfully. |
+| **Static Web Interface** | A minimal HTML/JavaScript single-page application is hosted on a private **S3 bucket** and served globally over HTTPS via **Amazon CloudFront** with **Origin Access Control (OAC)** — the S3 bucket is never directly accessible. |
+
 ## Architecture Overview
 
 ```
